@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using GameAssets.Meta.Quests;
 using GameAssets.Player.Data.Config;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ namespace GameAssets.Player.Data
 
         ushort tickets { get; protected set; }
 
-        Action UpdatedData { get; set; }
+        Action<BaseQuest.TypeQuest, BaseQuest.JobSubtype> UpdatedData { get; set; }
 
 
         void InitAsync();
@@ -65,6 +66,6 @@ namespace GameAssets.Player.Data
 
         UniTask<float> GetCoinsAsync();
 
-        Task<ConfigDataPlayer> GetConfigAsync();
+        UniTask<ConfigDataPlayer> GetConfigAsync();
     }
 }

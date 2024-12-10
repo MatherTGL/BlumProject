@@ -3,24 +3,19 @@ using UnityEngine;
 
 namespace GameAssets.Meta.Quests
 {
-    //TODO подгружать конфиги и инфу с сервера о квестах и устанавливать данные
     public sealed class QuestView : MonoBehaviour, ISpecificQuest
     {
         [ShowInInspector, ReadOnly]
         private IQuest Iquest;
 
-        [SerializeField, ReadOnly]
-        private string guid;
-
 
         void ISpecificQuest.Init(string guid, IQuest config)
         {
             Iquest = config;
-            this.guid = guid;
             Debug.Log($"Quest Inited {guid}");
         }
 
-        //TODO как-то обновлять UI
+        //TODO как-то обновлять UI + проверять условия (возможно)
         private void OnEnable()
         {
             Debug.Log("Quest info updated!");
@@ -29,13 +24,13 @@ namespace GameAssets.Meta.Quests
         [Button("Start Quest"), BoxGroup("Quest Control")]
         public void StartQuest() //TODO обновлять UI
         {
-            transform.parent.GetComponent<IControlQuestsView>().StartQuest(guid);
+            transform.parent.GetComponent<IControlQuestsView>().StartQuest(Iquest.guid);
         }
 
         [Button("Done Quest"), BoxGroup("Quest Control")]
         public void TakeReward() //TODO обновлять UI
         {
-            transform.parent.GetComponent<IControlQuestsView>().TakeReward(guid);
+            transform.parent.GetComponent<IControlQuestsView>().TakeReward(Iquest.guid);
         }
 
         bool ISpecificQuest.IsComplete()

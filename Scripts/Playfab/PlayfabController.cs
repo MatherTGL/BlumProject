@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Boot;
 using Cysharp.Threading.Tasks;
+using GameAssets.Meta.Quests;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine;
@@ -26,15 +27,20 @@ namespace GameAssets.General.Server
 
         private static readonly PlayfabGetUserData _userData = new();
 
-        //TODO поменять userid
-        private static readonly string _userID = "SFSFI";
+        private static readonly PlayfabQuests _quests = new();
+        
+        //TODO после присваивать значение
+        private static readonly string _userID = "SORGT3948RKAF";
 
 
         void IBoot.InitAwake() { }
 
         async void IBoot.InitStart()
         {
+            TelegramManager.Init();
             _friends.Init();
+            var loginName = TelegramManager.webAppService.InitDataUnsafe.User.Id.ToString();
+            Debug.Log($"loginName: {loginName}");
             await _login.LoginAsync(_userID);
 
             //TODO перенести в более нужное место отправку данных в борд
@@ -44,7 +50,7 @@ namespace GameAssets.General.Server
         (Bootstrap.TypeLoadObject typeLoad, Bootstrap.TypeSingleOrLotsOf singleOrLotsOf) IBoot.GetTypeLoad()
             => (Bootstrap.TypeLoadObject.SuperImportant, Bootstrap.TypeSingleOrLotsOf.Single);
 
-        public static async ValueTask LoginAsync()
+        public static async UniTask LoginAsync()
             => await _login.LoginAsync(_userID);
 
         public static void SendDataToLeaderboard()
@@ -66,6 +72,18 @@ namespace GameAssets.General.Server
             => await _friends.GetFriendsAsync();
 
         public static async UniTask<float> GetRefCoinsAsync()
-        => await _userData.GetRefCoinsAsync();
+            => await _userData.GetRefCoinsAsync();
+
+        public static async UniTask<List<BaseQuest>> LoadAllServerQuestsAsync()
+            => await _quests.LoadAllServerQuestsAsync();
+
+        public static async UniTask<bool> TryStartQuestAsync(IQuest quest)
+            => await _quests.TryStartQuestAsync(quest);
+
+        public static async UniTask<bool> TryCompleteQuestAsync(IQuest quest)
+            => await _quests.TryCompleteQuestAsync(quest);
+
+        public static async UniTask<bool> TryTakeRewardAsync(string guid)
+            => await _quests.TryTakeRewardAsync(guid);
     }
 }

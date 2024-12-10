@@ -17,9 +17,8 @@ namespace GameAssets.General.Server
 
         public async UniTask LoginAsync(string telegramUserID)
         {
-            if (_taskCompSource == null)
-                if (PlayFabClientAPI.IsClientLoggedIn() == false)
-                    LoginRequestWithRetries(telegramUserID).Subscribe();
+            if (_taskCompSource == null && PlayFabClientAPI.IsClientLoggedIn() == false)
+                LoginRequestWithRetries(telegramUserID).Subscribe();
 
             await _taskCompSource.Task;
         }
@@ -52,7 +51,12 @@ namespace GameAssets.General.Server
                         _taskCompSource.SetResult(result);
                         observer.OnCompleted();
                     },
-                    error => _taskCompSource.SetException(new Exception($"Error login: {error.ErrorMessage}"))
+                    error =>
+                    {
+                        var ex = new Exception(error.GenerateErrorReport());
+                        _taskCompSource.SetException(ex);
+                        observer.OnError(ex);
+                    }
                 );
 
                 return Disposable.Empty;

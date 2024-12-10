@@ -7,6 +7,9 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using GameAssets.General.Server;
+using PlayFab;
+using PlayFab.ClientModels;
 using UniRx;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -15,16 +18,15 @@ namespace GameAssets.Scripts.Service.Time
 {
     public static class WorldTime
     {
-        private static readonly HttpClient client = new HttpClient();
-
+        private static DateTime currentTime;
+        
         private static DateTime? cachedTime;
 
         private static DateTime lastFetchTime;
 
-        //TODO сделать возможность получать время без кеша, если это нужно
-        private static TimeSpan cacheDuration = TimeSpan.FromSeconds(3); //TODO увеличить минимум до 30 сек
+        private static TimeSpan cacheDuration = TimeSpan.FromSeconds(30);
 
-        private static readonly SemaphoreSlim semaphore = new(1, 1);
+        private static TaskCompletionSource<DateTime> currentTimeTaskCS = null;
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -33,60 +35,66 @@ namespace GameAssets.Scripts.Service.Time
             if (cachedTime.HasValue && DateTime.Now - lastFetchTime < cacheDuration)
                 return cachedTime.Value;
 
-            await semaphore.WaitAsync();
-
-            try
+            if (currentTimeTaskCS == null)
             {
-                var time = await SendRequestWithRetriesAsync();
-                return time;
+                await PlayfabController.LoginAsync();
+                SendRequestWithRetriesAsync().Subscribe();
             }
-            finally
-            {
-                semaphore.Release();
-            }
+            
+            currentTime = await currentTimeTaskCS.Task;
+            Debug.Log($"Get time: {currentTime}");
+            currentTimeTaskCS = null;
+            return currentTime;
         }
 
-        private static IObservable<DateTime> SendRequestWithRetriesAsync()
+        private static IObservable<Unit> SendRequestWithRetriesAsync()
         {
-            return Observable.Defer(() => SendAsync().ToObservable()).Retry(3).Delay(TimeSpan.FromSeconds(2)).Do(
+            currentTimeTaskCS ??= new();
+            
+            return Observable.Defer(() => SendAsync()).Retry(5).Delay(TimeSpan.FromSeconds(2)).Do(
                 _ => Debug.Log("Request succeeded"),
                 ex => Debug.LogError($"Request failed after retries: {ex.Message}")
             );
         }
 
-        private static async UniTask<DateTime> SendAsync()
+        private static IObservable<Unit> SendAsync()
         {
-            client.Timeout = TimeSpan.FromSeconds(20);
-
-            var tasks = new List<UniTask<HttpResponseMessage>>
+            return Observable.Create<Unit>(observer =>
             {
-                client.GetAsync("http://www.microsoft.com").AsUniTask(),
-                client.GetAsync("http://www.google.com").AsUniTask()
-            };
+                DateTime time = DateTime.UtcNow;
+                
+                var request = new ExecuteCloudScriptRequest
+                {
+                    FunctionName = "getCurrentWorldTime",
+                    GeneratePlayStreamEvent = true
+                };
+                
+                PlayFabClientAPI.ExecuteCloudScript(request, result =>
+                {
+                    if (result.FunctionResult != null)
+                    {
+                        if (result.FunctionResult is Dictionary<string, object> jsonResult && jsonResult.TryGetValue("currentTime", out var value))
+                        {
+                            if (DateTime.TryParse(value.ToString(), out time))
+                                Debug.Log("Parsed DateTime: " + time);
+                        }
+                        else
+                        {
+                            Debug.LogError("Result does not contain currentTime. Repeat...");
+                        }
 
-            var response = await UniTask.WhenAny(tasks);
-            response.result.EnsureSuccessStatusCode();
-
-            if (response.result.Headers.TryGetValues("date", out var values))
-            {
-                string todaysDate = values.First();
-
-                DateTime extract = DateTime.ParseExact(todaysDate,
-                                            "ddd, dd MMM yyyy HH:mm:ss 'GMT'",
-                                            CultureInfo.InvariantCulture.DateTimeFormat,
-                                            DateTimeStyles.AssumeUniversal);
-
-                lastFetchTime = extract;
-                cachedTime = lastFetchTime;
-                return extract;
-            }
-            else
-            {
-                return GetLocal();
-            }
+                        currentTimeTaskCS?.SetResult(time);
+                        observer.OnCompleted();
+                    }
+                }, error =>
+                {
+                    var ex = new Exception(error.ErrorMessage);
+                    currentTimeTaskCS.SetException(ex);
+                    observer.OnError(ex);
+                });
+                
+                return Disposable.Empty;
+            });
         }
-
-        private static DateTime GetLocal()
-            => DateTime.Now;
     }
 }

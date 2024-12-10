@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using GameAssets.General.Server;
+using GameAssets.Meta.Quests;
 using GameAssets.Player.Data.Config;
 using GameAssets.Scripts.Service.Time;
 using GameAssets.System.GameEvents;
@@ -37,7 +38,7 @@ namespace GameAssets.Player.Data
         //TODO подгружаем с телеги
         public static Image avatar { get; private set; }
 
-        public Action UpdatedData { get; set; }
+        public Action<BaseQuest.TypeQuest, BaseQuest.JobSubtype> UpdatedData { get; set; }
 
 
         public async void InitAsync()
@@ -47,7 +48,7 @@ namespace GameAssets.Player.Data
             InitServerData();
         }
 
-        private async ValueTask InitConfigParametersAsync()
+        private async UniTask InitConfigParametersAsync()
         {
             _config = await GetConfigAsync();
             await ((ISaveable<ConfigDataPlayer>)_config).AsyncLoad();
@@ -80,12 +81,12 @@ namespace GameAssets.Player.Data
             SaveData();
         }
 
-        public async Task<ConfigDataPlayer> GetConfigAsync()
+        public async UniTask<ConfigDataPlayer> GetConfigAsync()
             => await Addressables.LoadAssetAsync<ConfigDataPlayer>("DataPlayer").Task;
 
         public void Update()
         {
-            UpdatedData?.Invoke();
+            UpdatedData?.Invoke(BaseQuest.TypeQuest.Collect, BaseQuest.JobSubtype.Money);
             SaveData();
         }
 

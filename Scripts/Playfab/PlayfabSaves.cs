@@ -95,24 +95,22 @@ namespace GameAssets.General.Server
         {
             return Observable.Create<GetUserDataResult>(observer =>
             {
-                var request = new GetUserDataRequest
+                PlayFabClientAPI.GetUserData(new GetUserDataRequest
                 {
                     PlayFabId = null
-                };
-
-                PlayFabClientAPI.GetUserData(request,
-                    result =>
-                    {
-                        observer.OnNext(result);
-                        _taskCompSourceLoad.SetResult(result);
-                        observer.OnCompleted();
-                    },
-                    error =>
-                    {
-                        var ex = new Exception($"exception: {error.Error}");
-                        _taskCompSourceLoad.SetException(ex);
-                        observer.OnError(ex);
-                    });
+                },
+                result =>
+                {
+                    observer.OnNext(result);
+                    _taskCompSourceLoad.SetResult(result);
+                    observer.OnCompleted();
+                },
+                error =>
+                {
+                    var ex = new Exception($"exception: {error.Error}");
+                    _taskCompSourceLoad.SetException(ex);
+                    observer.OnError(ex);
+                });
 
                 return Disposable.Empty;
             });

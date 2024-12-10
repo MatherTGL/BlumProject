@@ -30,9 +30,10 @@ namespace GameAssets.Meta.MiniGame
                 return;
             }
 
-            Debug.Log("Игрок нажал на клетку");
+            Debug.Log($"Игрок нажал на клетку {_specificCell.typeCell} / reward: {_specificCell.reward}");
             _isOpen = true;
             Clicked?.Invoke(_specificCell.typeCell, _specificCell.reward);
+            Debug.Log("Clicked invoked!");
         }
     }
 }

@@ -35,7 +35,7 @@ namespace GameAssets.General.Server
 
         private IObservable<Unit> GetProfileRequestWithRetries(string targetID, string accountID)
         {
-            _taskCompeletionAddReferral = new();
+            _taskCompeletionAddReferral = new TaskCompletionSource<Unit>();
 
             return Observable.Defer(() => FindPlayerByTitlePlayerAccountID(targetID, accountID)).Retry(3).Delay(TimeSpan.FromSeconds(2)).Do(
                  _ => Debug.Log("Request succeeded"),
@@ -55,12 +55,10 @@ namespace GameAssets.General.Server
                 PlayFabClientAPI.GetUserData(request,
                     result =>
                     {
-                        if (result != null)
-                        {
-                            Debug.Log("GetUserData result and go AddFriend method");
-                            AddFriend(targetID, accountID).Subscribe();
-                            observer.OnCompleted();
-                        }
+                        if (result == null) return;
+                        Debug.Log("GetUserData result and go AddFriend method");
+                        AddFriend(targetID, accountID).Subscribe();
+                        observer.OnCompleted();
                     },
                     error =>
                     {
@@ -89,7 +87,7 @@ namespace GameAssets.General.Server
                 };
 
                 PlayFabClientAPI.ExecuteCloudScript(request,
-                    result =>
+                    _ =>
                     {
                         Debug.Log("AddFriend method result is success");
                         AccrueMoneyToPlayers(targetID, accountID);
@@ -106,7 +104,7 @@ namespace GameAssets.General.Server
                 return Disposable.Empty;
             });
         }
-
+        
         private async void AccrueMoneyToPlayers(string target, string account)
         {
             var config = await Addressables.LoadAssetAsync<ReferralsConfig>("ReferralConfig").Task;

@@ -23,6 +23,7 @@ namespace GameAssets.Meta.Quests
         async void IBoot.InitStart()
         {
             var quests = await QuestsController.Imodel.GetAllQuestsAsync();
+            
             Show(ref quests);
             Debug.Log("QuestsView inited");
         }
@@ -41,9 +42,8 @@ namespace GameAssets.Meta.Quests
         {
             for (byte i = 0; i < quests.Count; i++)
             {
-                quests[i].Init();
                 var quest = Instantiate(prefab, transform.position, Quaternion.identity, root.transform);
-                quest.GetComponent<ISpecificQuest>().Init(quests[i].guid, quests[i]);
+                quest.GetComponent<ISpecificQuest>().Init((quests[i] as BaseQuest).guid, quests[i]);
             }
         }
 
@@ -57,13 +57,11 @@ namespace GameAssets.Meta.Quests
         }
 
         void IControlQuestsView.StartQuest(string guid)
-        {
-            QuestsController.Imodel.StartQuest(guid);
-        }
+            => QuestsController.Imodel.StartQuest(guid);
 
         async void IControlQuestsView.TakeReward(string guid)
         {
-            if (await QuestsController.Imodel.IsTakeRewardAsync(guid))
+            if (await QuestsController.Imodel.TryTakeRewardAsync(guid))
                 availableQuestCount--;
         }
 

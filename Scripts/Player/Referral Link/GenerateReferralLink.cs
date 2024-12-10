@@ -41,7 +41,8 @@ namespace GameAssets.Player.Referral
 
         public static void CopyUserReferralLink()
         {
-            GUIUtility.systemCopyBuffer = $"https://t.me/{botUsername}?start=refID:{userID}";
+            WebGLCopyAndPasteAPI.CopyText($"https://t.me/{botUsername}?start={userID}");
+            Debug.Log("Copy Referral Link is success");
         }
 
         public static void ShareReferralLink()

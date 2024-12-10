@@ -13,7 +13,7 @@ namespace GameAssets.General.Server
     {
         private readonly PlayfabAddReferralToOtherUser _playfabFindTitleID = new();
 
-        private TaskCompletionSource<GetFriendsListResult> _taskCompeletionGetFriends;
+        private TaskCompletionSource<GetFriendsListResult> _taskCompeletionGetFriends = null;
 
 
         public async void Init()
@@ -27,7 +27,7 @@ namespace GameAssets.General.Server
         {
             Debug.Log("void AddFriendsToReferral");
             //TODO для теста. Должен браться с ссылки тг
-            refID = "6BECC4B1985BD4F2";
+            refID = "717BE9626C32C62";
             await _playfabFindTitleID.AddReferralToUserAsync(refID);
         }
 

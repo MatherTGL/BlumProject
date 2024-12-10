@@ -12,7 +12,7 @@ namespace GameAssets.General.Server
 {
     public sealed class PlayfabLeaderboard
     {
-        private TaskCompletionSource<List<PlayFab.ClientModels.PlayerLeaderboardEntry>> _taskCompeletionSource;
+        private TaskCompletionSource<List<PlayerLeaderboardEntry>> _taskCompeletionSource;
 
 
         public async void Send()

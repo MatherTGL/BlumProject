@@ -14,7 +14,7 @@ namespace GameAssets.Meta.Referrals
         private GameObject root;
 
 
-        void IBoot.InitAwake() { }
+        void IBoot.InitAwake() => ReferralsController.Imodel.Init();
 
         void IBoot.InitStart()
         {

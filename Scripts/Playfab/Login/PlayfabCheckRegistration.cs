@@ -11,7 +11,7 @@ namespace GameAssets.General.Server
 {
     public sealed class PlayfabCheckRegistration
     {
-        private TaskCompletionSource<bool> _taskCompeletionIsRegistation;
+        private TaskCompletionSource<bool> _taskCompeletionIsRegistation = null;
 
 
         public async UniTask<bool> IsRegistationAsync()
@@ -56,7 +56,7 @@ namespace GameAssets.General.Server
                 };
 
                 PlayFabClientAPI.UpdateUserData(request,
-                    result =>
+                    _ =>
                     {
                         Debug.Log("Player registered flag set successfully.");
                         _taskCompeletionIsRegistation.SetResult(false);

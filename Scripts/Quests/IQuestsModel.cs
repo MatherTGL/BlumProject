@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 
 namespace GameAssets.Meta.Quests
 {
@@ -7,8 +7,8 @@ namespace GameAssets.Meta.Quests
     {
         void StartQuest(string guid);
 
-        Task<bool> IsTakeRewardAsync(string guid);
+        UniTask<bool> TryTakeRewardAsync(string guid);
 
-        Task<List<IQuest>> GetAllQuestsAsync();
+        UniTask<List<IQuest>> GetAllQuestsAsync();
     }
 }

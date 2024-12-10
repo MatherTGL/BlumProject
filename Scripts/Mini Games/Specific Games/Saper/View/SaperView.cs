@@ -7,7 +7,7 @@ namespace GameAssets.Meta.MiniGame
 {
     public sealed class SaperView : MonoBehaviour, IMiniGameView
     {
-        private ISaperModel _IsaperModel;
+        private ISaperModel _IsaperModel = new SaperModel();
 
         [SerializeField, Required, BoxGroup("Parameters")]
         private SaperCell _cellPrefab;
@@ -35,7 +35,7 @@ namespace GameAssets.Meta.MiniGame
         }
 
         private void OnClickedCell(Cell.TypeCell typeCell, uint reward)
-            => _IsaperModel?.ClickedCell(typeCell, reward);
+            => _IsaperModel.ClickedCell(typeCell, reward);
 
         void IMiniGameView.SetTimerText(double countdown)
         {
