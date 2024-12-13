@@ -44,10 +44,10 @@ BlumProject is a Telegram-based game inspired by Blum, reimagined with unique me
 The project is nearly complete, with the core mechanics and features fully implemented. All essential functionalities are operational. The final task is refining the design and user interface for a polished player experience.
 
 ## ![Tech Stack](https://img.shields.io/badge/Tech%20Stack-green) Tech Stack
-- ![Unity](https://img.shields.io/badge/Unity-blue) **Game Engine**: Unity (2022.3)
-- ![C#](https://img.shields.io/badge/C%23-green) **Programming Language**: C#
-- ![API](https://img.shields.io/badge/API-orange) **Integration**: Telegram Bot API
-- ![Tools](https://img.shields.io/badge/Tools-yellowgreen) **Other Tools**: JSON serialization for data management. UniRx. UniTask.
+- **Game Engine**: Unity (2022.3)
+- **Programming Language**: C#
+- **Integration**: Telegram Bot API
+- **Other Tools**: JSON serialization for data management. UniRx. UniTask.
 
 ## ![Screenshots](https://img.shields.io/badge/Screenshots-lightgrey) Screenshots
 *Coming Soon: Visuals to showcase gameplay and UI.*
