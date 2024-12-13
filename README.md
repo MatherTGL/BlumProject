@@ -1,6 +1,6 @@
 # BlumProject
 ![Project Status](https://img.shields.io/badge/status-in%20development-orange)
-![Unity Version](https://img.shields.io/badge/unity-2022.3-blue)
+![Unity Version](https://img.shields.io/badge/unity-2023.2.20f-blue)
 ![C#](https://img.shields.io/badge/language-C%23-green)
 
 ## ![Overview](https://img.shields.io/badge/Overview-lightblue)
