@@ -9,19 +9,12 @@ BlumProject is a Telegram-based game inspired by Blum, reimagined with unique me
 
 ## Features
 - **Telegram Integration**: Seamlessly interacts with Telegram for user input and notifications.
-- **Unique Gameplay Mechanics**: Expanding upon the ideas of Blum with custom enhancements.
-- **Scalable Architecture**: Designed for efficient deployment and future updates.
+- **Game Progression and Balance**: Implements a robust gameplay loop with dynamic difficulty scaling.
+- **Data Management**: Utilizes JSON serialization for efficient data handling and player progress tracking.
+- **UI and Interactivity**: Provides interactive elements for player feedback, optimized for Telegram bot interaction.
 
 ## Current Status
-This project is actively under development. Here’s what’s been implemented so far:
-- Basic gameplay loop.
-- User registration and progress saving.
-- Initial Telegram bot setup.
-
-### Roadmap
-- Add advanced mechanics for player interaction.
-- Improve UI/UX for better player experience.
-- Optimize server-client communication.
+The project is nearly complete, with the core mechanics and features fully implemented. All essential functionalities are operational. The final task is refining the design and user interface for a polished player experience.
 
 ## Tech Stack
 - **Game Engine**: Unity (2022.3)
